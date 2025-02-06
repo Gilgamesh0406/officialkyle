@@ -1,0 +1,112 @@
+{
+    "allowed": {
+        "admin": [
+            "6ec63fca298adc474586ccd5",
+            "076a86240fdee38b2b52bc27"
+        ],
+        "dashboard": [
+            "6ec63fca298adc474586ccd5",
+            "076a86240fdee38b2b52bc27"
+        ]
+    },
+    "server": {
+        "binds": {
+            "steam": true,
+            "google": true,
+            "discord": true,
+            "facebook": false
+        },
+        "alerts": [
+            "We added P2P trading system and loading the CS2 items wear. Check it out."
+        ],
+        "notifies": [
+            "We added P2P trading system and loading the CS2 items wear. Check it out."
+        ]
+    },
+    "games": {
+        "status": true,
+        "enable": {
+            "coinflip": true,
+            "unboxing": true,
+            "casebattle": true,
+            "plinko": true
+        },
+        "bots": {
+            "enable": {
+                "coinflip": true,
+                "casebattle": true
+            }
+        }
+    },
+    "trades": {
+        "status": true,
+        "manually": {
+            "amount": 0.01,
+            "enable": {
+                "steam": true,
+                "p2p": true,
+                "crypto": true
+            }
+        },
+        "steam": {
+            "enable": {
+                "deposit": {
+                    "csgo": true,
+                    "dota2": true,
+                    "tf2": true,
+                    "rust": true,
+                    "h1z1": true
+                },
+                "withdraw": {
+                    "csgo": true,
+                    "dota2": true,
+                    "tf2": true,
+                    "rust": true,
+                    "h1z1": true
+                }
+            }
+        },
+        "p2p": {
+            "enable": {
+                "deposit": {
+                    "csgo": true,
+                    "dota2": true,
+                    "tf2": true,
+                    "rust": true,
+                    "h1z1": true
+                },
+                "withdraw": {
+                    "csgo": true,
+                    "dota2": true,
+                    "tf2": true,
+                    "rust": true,
+                    "h1z1": true
+                }
+            }
+        },
+        "crypto": {
+            "enable": {
+                "deposit": {
+                    "btc": true,
+                    "eth": true,
+                    "ltc": true,
+                    "bch": true,
+                    "usdc": true,
+                    "usdt": true,
+                    "doge": true,
+                    "xrp": true
+                },
+                "withdraw": {
+                    "btc": true,
+                    "eth": true,
+                    "ltc": true,
+                    "bch": true,
+                    "usdc": true,
+                    "usdt": true,
+                    "doge": true,
+                    "xrp": true
+                }
+            }
+        }
+    }
+}

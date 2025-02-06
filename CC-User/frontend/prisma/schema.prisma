@@ -1,0 +1,1091 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Bannedip {
+  id      BigInt  @id @default(autoincrement())
+  removed Boolean @default(false)
+  ip      String  @db.Text
+  userid  String  @db.VarChar(24)
+  time    BigInt
+  user    User    @relation(fields: [userid], references: [userid])
+
+  @@map("banned_ip")
+}
+
+model BonusCode {
+  id       BigInt  @id @default(autoincrement())
+  userid   String  @db.VarChar(24)
+  code     String  @db.VarChar(256)
+  amount   Decimal @db.Decimal(32, 2)
+  uses     BigInt  @default(0)
+  max_uses BigInt
+  time     BigInt
+  user     User    @relation(fields: [userid], references: [userid])
+
+  @@map("bonus_codes")
+}
+
+model BonusUse {
+  id     BigInt  @id @default(autoincrement())
+  userid String  @db.VarChar(24)
+  code   String  @db.VarChar(256)
+  amount Decimal @db.Decimal(32, 2)
+  time   BigInt
+  user   User    @relation(fields: [userid], references: [userid])
+
+  @@map("bonus_uses")
+}
+
+model CasebattleBet {
+  id       BigInt  @id @default(autoincrement())
+  canceled Boolean @default(false)
+  userid   String  @db.VarChar(24)
+  name     String  @db.VarChar(256)
+  avatar   String  @db.Text
+  xp       BigInt
+  bot      BigInt
+  gameid   BigInt
+  position BigInt
+  creator  BigInt  @default(0)
+  time     BigInt
+  user     User    @relation(fields: [userid], references: [userid])
+
+  @@map("casebattle_bets")
+}
+
+model CasebattleDraw {
+  id          BigInt  @id @default(autoincrement())
+  removed     Boolean @default(false)
+  gameid      BigInt
+  blockid     BigInt
+  public_seed String  @db.VarChar(256)
+  roll        String  @db.Text
+  time        BigInt
+
+  @@map("casebattle_draws")
+}
+
+model CasebattleGame {
+  id                  BigInt              @id @default(autoincrement())
+  canceled            Boolean             @default(false)
+  ended               Boolean             @default(false)
+  cases               String              @db.Text
+  amount              Decimal             @db.Decimal(32, 2)
+  mode                BigInt
+  privacy             BigInt
+  free                BigInt
+  crazy               BigInt
+  server_seed         String              @db.VarChar(256)
+  battleid            String              @db.VarChar(24)
+  time                BigInt
+  casebattle_rolls    CasebattleRoll[]
+  casebattle_items    CasebattleItem[]
+  casebattle_winnings CasebattleWinning[]
+
+  @@map("casebattle_games")
+}
+
+model CasebattleItem {
+  id               BigInt         @id @default(autoincrement())
+  gameid           BigInt
+  items            String         @db.Text
+  time             BigInt
+  casebattle_games CasebattleGame @relation(fields: [gameid], references: [id])
+
+  @@map("casebattle_items")
+}
+
+model CasebattleRoll {
+  id               BigInt         @id @default(autoincrement())
+  removed          Boolean        @default(false)
+  gameid           BigInt
+  blockid          BigInt
+  public_seed      String         @db.VarChar(256)
+  roll             String         @db.Text
+  time             BigInt
+  casebattle_games CasebattleGame @relation(fields: [gameid], references: [id])
+
+  @@map("casebattle_rolls")
+}
+
+model CasebattleWinning {
+  id               BigInt         @id @default(autoincrement())
+  gameid           BigInt
+  items            String         @db.Text
+  amount           Decimal        @db.Decimal(32, 2)
+  position         BigInt
+  time             BigInt
+  casebattle_games CasebattleGame @relation(fields: [gameid], references: [id])
+
+  @@map("casebattle_winnings")
+}
+
+model CasesCase {
+  id      BigInt  @id @default(autoincrement())
+  removed Boolean @default(false)
+  caseid  String  @db.Text
+  items   String  @db.Text
+  name    String  @db.Text
+  image   String  @db.Text
+  offset  Decimal @db.Decimal(32, 2)
+  battle  BigInt  @default(0)
+  time    BigInt
+
+  @@map("cases_cases")
+}
+
+model CasesDailycase {
+  id      BigInt  @id @default(autoincrement())
+  removed Boolean @default(false)
+  caseid  String  @db.Text
+  items   String  @db.Text
+  name    String  @db.Text
+  image   String  @db.Text
+  level   BigInt
+  time    BigInt
+
+  @@map("cases_dailycases")
+}
+
+model ChatIgnore {
+  id       BigInt  @id @default(autoincrement())
+  removed  Boolean @default(false)
+  userid   String  @db.VarChar(24)
+  ignoreid String  @db.VarChar(24)
+  time     BigInt
+  user     User    @relation(fields: [userid], references: [userid])
+
+  @@map("chat_ignore")
+}
+
+model ChatMessage {
+  id      BigInt  @id @default(autoincrement())
+  deleted Boolean @default(false)
+  userid  String  @db.VarChar(24)
+  name    String  @db.VarChar(256)
+  avatar  String  @db.Text
+  rank    BigInt
+  xp      BigInt
+  private Boolean @default(false)
+  message String  @db.Text
+  channel String  @db.VarChar(32)
+  time    BigInt
+  user    User    @relation(fields: [userid], references: [userid])
+
+  @@map("chat_messages")
+}
+
+model CoinflipBet {
+  id       BigInt @id @default(autoincrement())
+  userid   String @db.VarChar(24)
+  name     String @db.VarChar(256)
+  avatar   String @db.Text
+  xp       BigInt
+  bot      BigInt
+  gameid   BigInt
+  position BigInt
+  creator  BigInt
+  time     BigInt
+  user     User   @relation(fields: [userid], references: [userid])
+
+  @@map("coinflip_bets")
+}
+
+model CoinflipGame {
+  id          BigInt  @id @default(autoincrement())
+  canceled    Boolean @default(false)
+  ended       Boolean @default(false)
+  amount      Decimal @db.Decimal(32, 2)
+  server_seed String  @db.VarChar(256)
+  time        BigInt
+
+  coinflip_rolls    CoinflipRoll[]
+  coinflip_winnings CoinflipWinning[]
+
+  @@map("coinflip_games")
+}
+
+model CoinflipRoll {
+  id             BigInt       @id @default(autoincrement())
+  removed        Boolean      @default(false)
+  gameid         BigInt
+  blockid        BigInt
+  public_seed    String       @db.VarChar(256)
+  roll           Float
+  time           BigInt
+  coinflip_games CoinflipGame @relation(fields: [gameid], references: [id])
+
+  @@map("coinflip_rolls")
+}
+
+model CoinflipWinning {
+  id             BigInt       @id @default(autoincrement())
+  gameid         BigInt
+  position       BigInt
+  time           BigInt
+  coinflip_games CoinflipGame @relation(fields: [gameid], references: [id])
+
+  @@map("coinflip_winnings")
+}
+
+model CryptoAddress {
+  id       BigInt  @id @default(autoincrement())
+  removed  Boolean @default(false)
+  userid   String  @db.VarChar(24)
+  address  String  @db.VarChar(256)
+  currency String  @db.VarChar(32)
+  time     BigInt
+  user     User    @relation(fields: [userid], references: [userid])
+
+  @@map("crypto_addresses")
+}
+
+model CryptoConfirmation {
+  id            BigInt @id @default(autoincrement())
+  userid        String @default("0") @db.VarChar(24)
+  listingid     BigInt
+  transactionid BigInt
+  time          BigInt @default(0)
+  user          User   @relation(fields: [userid], references: [userid])
+
+  @@map("crypto_confirmations")
+}
+
+model CryptoListing {
+  id        BigInt  @id @default(autoincrement())
+  canceled  Boolean @default(false)
+  confirmed Boolean @default(false)
+  type      String  @db.VarChar(256)
+  userid    String  @default("0") @db.VarChar(24)
+  address   String  @db.Text
+  currency  String  @db.VarChar(32)
+  amount    Decimal @default(0.00) @db.Decimal(32, 2)
+  time      BigInt  @default(0)
+  user      User    @relation(fields: [userid], references: [userid])
+
+  @@map("crypto_listings")
+}
+
+model CryptoTransaction {
+  id        BigInt  @id @default(autoincrement())
+  inspected Boolean @default(false)
+  status    BigInt
+  type      String  @db.VarChar(256)
+  userid    String  @default("0") @db.VarChar(24)
+  name      String  @db.VarChar(256)
+  avatar    String  @db.Text
+  xp        BigInt
+  txnid     String? @db.VarChar(256)
+  address   String  @db.Text
+  currency  String  @db.VarChar(32)
+  amount    Decimal @default(0.00) @db.Decimal(32, 2)
+  value     Float   @default(0)
+  exchange  Decimal @default(0.00000) @db.Decimal(32, 5)
+  fee       Float   @default(0)
+  time      BigInt  @default(0)
+  user      User    @relation(fields: [userid], references: [userid])
+
+  @@map("crypto_transactions")
+}
+
+model DailycasesBet {
+  id            BigInt  @id @default(autoincrement())
+  userid        String  @db.VarChar(24)
+  name          String  @db.VarChar(256)
+  avatar        String  @db.Text
+  xp            BigInt
+  caseid        String  @db.Text
+  itemid        String  @db.Text
+  roll          BigInt
+  tickets       BigInt
+  server_seedid Decimal @db.Decimal(32, 0)
+  client_seedid Decimal @db.Decimal(32, 0)
+  nonce         Decimal @db.Decimal(32, 0)
+  time          BigInt
+  user          User    @relation(fields: [userid], references: [userid])
+
+  @@map("dailycases_bets")
+}
+
+model DepositBonus {
+  id     BigInt  @id @default(autoincrement())
+  userid String  @db.VarChar(24)
+  bonus  BigInt
+  amount Decimal @default(0.00000) @db.Decimal(32, 5)
+  time   BigInt
+  user   User    @relation(fields: [userid], references: [userid])
+
+  @@map("deposit_bonuses")
+}
+
+model DepositCode {
+  id       BigInt  @id @default(autoincrement())
+  removed  Boolean @default(false)
+  userid   String  @db.VarChar(24)
+  referral String  @db.VarChar(24)
+  code     String  @db.VarChar(256)
+  uses     BigInt  @default(0)
+  amount   Decimal @default(0.00000) @db.Decimal(32, 5)
+  time     BigInt
+  user     User    @relation(fields: [userid], references: [userid])
+
+  @@map("deposit_codes")
+}
+
+model DepositUse {
+  id      BigInt  @id @default(autoincrement())
+  removed Boolean @default(false)
+  userid  String  @db.VarChar(24)
+  bonus   BigInt
+  time    BigInt
+  user    User    @relation(fields: [userid], references: [userid])
+
+  @@map("deposit_uses")
+}
+
+model ItemsList {
+  id       BigInt  @id @default(autoincrement())
+  itemid   String  @db.Text
+  name     String  @db.Text
+  image    String  @db.Text
+  price    Decimal @db.Decimal(32, 2)
+  quality  String  @db.Text
+  type     String? @db.Text
+  stattrak String  @db.VarChar(32)
+  souvenir String  @db.VarChar(32)
+  update   BigInt
+  time     BigInt
+
+  @@map("items_lists")
+}
+
+model JoinReferral {
+  id       BigInt @id @default(autoincrement())
+  referral String @db.VarChar(256)
+  ip       String @db.Text
+  location String @db.Text
+  agent    String @db.Text
+  time     BigInt
+
+  @@map("join_referrals")
+}
+
+model JoinVisitor {
+  id       BigInt @id @default(autoincrement())
+  link     String @db.Text
+  ip       String @db.Text
+  location String @db.Text
+  agent    String @db.Text
+  time     BigInt
+
+  @@map("join_visitors")
+}
+
+model LinkKey {
+  id      BigInt  @id @default(autoincrement())
+  used    BigInt  @default(0)
+  removed Boolean @default(false)
+  type    String  @db.VarChar(265)
+  userid  String  @db.VarChar(24)
+  key     String  @db.VarChar(256)
+  expire  BigInt
+  created BigInt
+  user    User    @relation(fields: [userid], references: [userid])
+
+  @@map("link_keys")
+}
+
+model LinkReferral {
+  id       BigInt  @id @default(autoincrement())
+  removed  Boolean @default(false)
+  userid   String  @db.VarChar(24)
+  referral String  @db.VarChar(256)
+  usage    String  @db.Text
+  expire   BigInt
+  time     BigInt
+  user     User    @relation(fields: [userid], references: [userid])
+
+  @@map("link_referrals")
+}
+
+model MailerSent {
+  id      BigInt @id @default(autoincrement())
+  userid  String @db.VarChar(24)
+  email   String @db.VarChar(256)
+  subject String @db.Text
+  message String @db.Text
+  time    BigInt
+  user    User   @relation(fields: [userid], references: [userid])
+
+  @@map("mailer_sents")
+}
+
+model Maintenance {
+  id      BigInt  @id @default(autoincrement())
+  removed Boolean @default(false)
+  userid  String  @db.VarChar(24)
+  reason  String  @db.Text
+  time    BigInt
+  user    User    @relation(fields: [userid], references: [userid])
+
+  @@map("maintenances")
+}
+
+model P2PBuyer {
+  id             BigInt           @id @default(autoincrement())
+  canceled       Boolean          @default(false)
+  userid         String           @db.VarChar(24)
+  name           String           @db.VarChar(256)
+  avatar         String           @db.Text
+  xp             BigInt
+  steamid        String           @db.VarChar(17)
+  apikey         String           @db.VarChar(32)
+  tradelink      String           @db.Text
+  offerid        BigInt
+  time           BigInt
+  user           User             @relation(fields: [userid], references: [userid])
+  P2PTransaction P2PTransaction[]
+
+  @@map("p2p_buyers")
+}
+
+model P2PTransaction {
+  id           BigInt  @id @default(autoincrement())
+  status       BigInt  @default(0)
+  userid       String  @db.VarChar(24)
+  name         String  @db.VarChar(256)
+  avatar       String  @db.Text
+  xp           BigInt
+  steamid      String  @db.VarChar(17)
+  apikey       String  @db.VarChar(32)
+  tradelink    String  @db.Text
+  items        String  @db.Text
+  amount       Decimal @db.Decimal(32, 2)
+  game         String  @db.VarChar(256)
+  tradeofferid String? @db.VarChar(32)
+  time         BigInt
+  buyerid      BigInt
+
+  user      User      @relation(fields: [userid], references: [userid])
+  p2p_buyer P2PBuyer? @relation(fields: [buyerid], references: [id])
+
+  @@map("p2p_transactions")
+}
+
+model PlinkoBet {
+  id            BigInt  @id @default(autoincrement())
+  userid        String  @db.VarChar(24)
+  name          String  @db.VarChar(256)
+  avatar        String  @db.Text
+  xp            BigInt
+  amount        Decimal @db.Decimal(32, 2)
+  game          String  @db.VarChar(32)
+  multiplier    Decimal @db.Decimal(32, 2)
+  roll          String  @db.Text
+  server_seedid BigInt
+  client_seedid BigInt
+  nonce         BigInt
+  time          BigInt
+
+  user               User           @relation(fields: [userid], references: [userid])
+  users_seeds_server UserSeedServer @relation(fields: [server_seedid], references: [id])
+  users_seeds_client UserSeedClient @relation(fields: [client_seedid], references: [id])
+
+  @@map("plinko_bets")
+}
+
+model RainBet {
+  id      BigInt  @id @default(autoincrement())
+  userid  String  @db.VarChar(24)
+  level   BigInt
+  winning Decimal @default(0.00) @db.Decimal(32, 2)
+  tickets String  @db.VarChar(256)
+  id_rain BigInt
+  time    BigInt
+  user    User    @relation(fields: [userid], references: [userid])
+
+  @@map("rain_bets")
+}
+
+model RainHistory {
+  id          BigInt  @id @default(autoincrement())
+  ended       Boolean @default(false)
+  amount      Decimal @db.Decimal(32, 2)
+  time_roll   BigInt
+  time_create BigInt
+
+  @@map("rain_history")
+}
+
+model RainTip {
+  id      BigInt  @id @default(autoincrement())
+  userid  String  @db.VarChar(24)
+  amount  Decimal @db.Decimal(32, 2)
+  id_rain BigInt
+  time    BigInt
+  user    User    @relation(fields: [userid], references: [userid])
+
+  @@map("rain_tips")
+}
+
+model ReferralCode {
+  id        BigInt  @id @default(autoincrement())
+  userid    String  @db.VarChar(24)
+  code      String  @db.VarChar(256)
+  collected Decimal @default(0.00) @db.Decimal(32, 2)
+  available Decimal @default(0.00000) @db.Decimal(32, 5)
+  time      BigInt
+  user      User    @relation(fields: [userid], references: [userid])
+
+  @@map("referral_codes")
+}
+
+model ReferralDeposited {
+  id         BigInt  @id @default(autoincrement())
+  userid     String  @db.VarChar(24)
+  referral   String  @db.VarChar(24)
+  amount     Decimal @db.Decimal(32, 2)
+  commission Decimal @db.Decimal(32, 5)
+  time       BigInt
+  user       User    @relation(fields: [userid], references: [userid])
+
+  @@map("referral_deposited")
+}
+
+model ReferralUpdate {
+  id     BigInt @id @default(autoincrement())
+  userid String @db.VarChar(24)
+  code   String @db.VarChar(256)
+  time   BigInt
+  user   User   @relation(fields: [userid], references: [userid])
+
+  @@map("referral_updates")
+}
+
+model ReferralUse {
+  id       BigInt  @id @default(autoincrement())
+  userid   String  @db.VarChar(24)
+  referral String  @db.VarChar(24)
+  amount   Decimal @db.Decimal(32, 2)
+  time     BigInt
+  user     User    @relation(fields: [userid], references: [userid])
+
+  @@map("referral_uses")
+}
+
+model ReferralWagered {
+  id         BigInt  @id @default(autoincrement())
+  userid     String  @db.VarChar(24)
+  referral   String  @db.VarChar(24)
+  amount     Decimal @db.Decimal(32, 2)
+  commission Decimal @db.Decimal(32, 5)
+  time       BigInt
+  user       User    @relation(fields: [userid], references: [userid])
+
+  @@map("referral_wagered")
+}
+
+model SecurityCode {
+  id      BigInt  @id @default(autoincrement())
+  used    BigInt  @default(0)
+  removed Boolean @default(false)
+  type    String  @db.VarChar(265)
+  userid  String  @db.VarChar(24)
+  code    String  @db.VarChar(256)
+  expire  BigInt
+  created BigInt
+  user    User    @relation(fields: [userid], references: [userid])
+
+  @@map("security_codes")
+}
+
+model SteamConfirmation {
+  id            BigInt @id @default(autoincrement())
+  userid        String @default("0") @db.VarChar(24)
+  listingid     BigInt
+  transactionid BigInt
+  time          BigInt @default(0)
+  user          User   @relation(fields: [userid], references: [userid])
+
+  @@map("steam_confirmations")
+}
+
+model SteamInventory {
+  id     BigInt @id @default(autoincrement())
+  itemid String @db.VarChar(256)
+  game   String @db.Text
+  status BigInt @default(0)
+  time   BigInt
+
+  @@map("steam_inventory")
+}
+
+model SteamItem {
+  id         BigInt  @id @default(autoincrement())
+  itemid     String  @db.VarChar(256)
+  wear       Decimal @db.Decimal(32, 16)
+  paintindex BigInt
+  time       BigInt
+
+  @@map("steam_items")
+}
+
+model SteamListing {
+  id        BigInt  @id @default(autoincrement())
+  canceled  Boolean @default(false)
+  confirmed Boolean @default(false)
+  type      String  @db.VarChar(256)
+  refill    BigInt  @default(0)
+  userid    String  @default("0") @db.VarChar(24)
+  steamid   String  @db.VarChar(17)
+  tradelink String  @db.Text
+  items     String  @db.Text
+  amount    Decimal @default(0.00) @db.Decimal(32, 2)
+  game      String  @db.VarChar(256)
+  bot       BigInt
+  time      BigInt  @default(0)
+  user      User    @relation(fields: [userid], references: [userid])
+
+  @@map("steam_listings")
+}
+
+model SteamTransaction {
+  id           BigInt  @unique(map: "id") @default(autoincrement())
+  status       BigInt  @default(0)
+  type         String  @db.VarChar(256)
+  refill       BigInt  @default(0)
+  userid       String  @db.VarChar(24)
+  name         String  @db.VarChar(256)
+  avatar       String  @db.Text
+  xp           BigInt
+  steamid      String  @db.VarChar(17)
+  items        String  @db.Text
+  amount       Decimal @db.Decimal(32, 2)
+  code         String  @db.VarChar(24)
+  game         String  @db.VarChar(256)
+  tradeofferid BigInt
+  botsteamid   String  @db.VarChar(17)
+  time         BigInt
+  user         User    @relation(fields: [userid], references: [userid])
+
+  @@map("steam_transactions")
+}
+
+model SteamVerification {
+  id           BigInt @unique(map: "id") @default(autoincrement())
+  userid       String @db.VarChar(24)
+  botsteamid   String @db.VarChar(17)
+  tradeofferid BigInt
+  code         String @db.VarChar(24)
+  item         String @db.Text
+  time         BigInt
+  user         User   @relation(fields: [userid], references: [userid])
+
+  @@map("steam_verifications")
+}
+
+model SupportMessage {
+  id                BigInt          @id @default(autoincrement())
+  userid            String          @db.VarChar(24)
+  name              String          @db.VarChar(256)
+  avatar            String          @db.Text
+  xp                BigInt          
+  message           String          @db.Text
+  image             String          @db.Text
+  supportid         BigInt          
+  response          BigInt          @default(0)
+  time              BigInt          
+  user              User            @relation(fields: [userid], references: [userid])
+  support_tickets   SupportTicket   @relation(fields: [supportid], references: [id])
+
+  @@map("support_messages")
+}
+
+model SupportReceiver {
+  id                BigInt          @id @default(autoincrement())
+  removed           Boolean         @default(false)
+  userid            String          @db.VarChar(24)
+  name              String          @db.VarChar(256)
+  avatar            String          @db.Text
+  xp                BigInt        
+  supportid         BigInt        
+  time              BigInt        
+  user              User            @relation(fields: [userid], references: [userid])
+  support_tickets   SupportTicket   @relation(fields: [supportid], references: [id])
+
+  @@map("support_receivers")
+}
+
+model SupportTicket {
+  id            BigInt              @id @default(autoincrement())
+  closed        Boolean             @default(false)
+  userid        String              @db.VarChar(24)
+  name          String              @db.VarChar(256)
+  avatar        String              @db.Text
+  xp            BigInt            
+  title         String              @db.VarChar(256)
+  department    BigInt            
+  time          BigInt            
+  user          User                @relation(fields: [userid], references: [userid])
+  messages      SupportMessage[] 
+  receivers     SupportReceiver[]
+
+  @@map("support_tickets")
+}
+
+model UnboxingBet {
+  id                 BigInt         @id @default(autoincrement())
+  userid             String         @db.VarChar(24)
+  name               String         @db.VarChar(256)
+  avatar             String         @db.Text
+  xp                 BigInt
+  caseid             String         @db.Text
+  itemid             String         @db.Text
+  roll               BigInt
+  tickets            BigInt
+  server_seedid      BigInt
+  client_seedid      BigInt
+  nonce              Decimal        @db.Decimal(32, 0)
+  time               BigInt
+  user               User           @relation(fields: [userid], references: [userid])
+  users_seeds_server UserSeedServer @relation(fields: [server_seedid], references: [id])
+  users_seeds_client UserSeedClient @relation(fields: [client_seedid], references: [id])
+
+  @@map("unboxing_bets")
+}
+
+model User {
+  id             BigInt  @id @default(autoincrement())
+  bot            Boolean @default(false)
+  initialized    Boolean @default(false)
+  verified       Boolean @default(false)
+  anonymous      Boolean @default(false)
+  private        Boolean @default(false)
+  userid         String  @unique @db.VarChar(24)
+  username       String  @db.VarChar(256)
+  email          String? @db.VarChar(256)
+  password       String? @db.VarChar(256)
+  name           String  @db.VarChar(256)
+  avatar         String  @db.Text
+  rank           BigInt  @default(0)
+  balance        Decimal @default(0.00000) @db.Decimal(32, 5)
+  xp             BigInt  @default(0)
+  available      Decimal @default(0.00) @db.Decimal(32, 2)
+  tradelink      String? @db.Text
+  apikey         String? @db.Text
+  exclusion      BigInt  @default(0)
+  deposit_count  BigInt  @default(0)
+  deposit_total  Decimal @default(0.00) @db.Decimal(32, 2)
+  withdraw_count BigInt  @default(0)
+  withdraw_total Decimal @default(0.00) @db.Decimal(32, 2)
+  time_create    BigInt
+
+  users_from_useridTouser                  UserRestriction[]     @relation("users_restrictions_from_useridTousers")
+  users_from_byuseridTouser                UserRestriction[]     @relation("users_restrictions_from_byuseridTousers")
+  users_users_transfers_from_useridTousers UserTransfer[]        @relation("users_users_transfers_from_useridTousers")
+  users_users_transfers_to_useridTouser    UserTransfer[]        @relation("users_users_transfers_to_useridTousers")
+  Bannedip                                 Bannedip[]
+  BonusCode                                BonusCode[]
+  BonusUse                                 BonusUse[]
+  CasebattleBet                            CasebattleBet[]
+  ChatIgnore                               ChatIgnore[]
+  ChatMessage                              ChatMessage[]
+  CoinflipBet                              CoinflipBet[]
+  CryptoAddress                            CryptoAddress[]
+  CryptoConfirmation                       CryptoConfirmation[]
+  CryptoListing                            CryptoListing[]
+  CryptoTransaction                        CryptoTransaction[]
+  DailycasesBet                            DailycasesBet[]
+  DepositBonus                             DepositBonus[]
+  DepositCode                              DepositCode[]
+  DepositUse                               DepositUse[]
+  LinkKey                                  LinkKey[]
+  LinkReferral                             LinkReferral[]
+  MailerSent                               MailerSent[]
+  Maintenance                              Maintenance[]
+  P2PBuyer                                 P2PBuyer[]
+  P2PTransaction                           P2PTransaction[]
+  PlinkoBet                                PlinkoBet[]
+  RainBet                                  RainBet[]
+  RainTip                                  RainTip[]
+  ReferralCode                             ReferralCode[]
+  ReferralDeposited                        ReferralDeposited[]
+  ReferralUpdate                           ReferralUpdate[]
+  ReferralUse                              ReferralUse[]
+  ReferralWagered                          ReferralWagered[]
+  SecurityCode                             SecurityCode[]
+  SteamConfirmation                        SteamConfirmation[]
+  SteamListing                             SteamListing[]
+  SteamTransaction                         SteamTransaction[]
+  SteamVerification                        SteamVerification[]
+  SupportMessages                          SupportMessage[]
+  SupportReceiver                          SupportReceiver[]
+  SupportTicket                            SupportTicket[]
+  UnboxingBet                              UnboxingBet[]
+  UserBind                                 UserBind[]
+  UserChange                               UserChange[]
+  UserItem                                 UserItem[]
+  UserItemTransaction                      UserItemTransaction[]
+  UserLogin                                UserLogin[]
+  UserReward                               UserReward[]
+  UserSeedClient                           UserSeedClient[]
+  UserSeedServer                           UserSeedServer[]
+  UserSession                              UserSession[]
+  UserTrade                                UserTrade[]
+  UserTransaction                          UserTransaction[]
+  UserTwofa                                UserTwofa[]
+  CreditCardDeposit                        CreditCardDeposit[]
+
+  @@map("users")
+}
+
+model UserBind {
+  id      BigInt  @id @default(autoincrement())
+  removed Boolean @default(false)
+  userid  String  @db.VarChar(24)
+  bind    String  @db.VarChar(256)
+  bindid  String  @db.Text
+  time    BigInt
+  user    User    @relation(fields: [userid], references: [userid])
+
+  @@map("users_binds")
+}
+
+model UserChange {
+  id     BigInt @id @default(autoincrement())
+  userid String @db.VarChar(24)
+  change String @db.VarChar(256)
+  value  String @db.Text
+  time   BigInt
+  user   User   @relation(fields: [userid], references: [userid])
+
+  @@map("users_changes")
+}
+
+model UserItem {
+  id     BigInt @id @default(autoincrement())
+  status BigInt @default(0)
+  userid String @db.VarChar(24)
+  itemid String @db.Text
+  time   BigInt
+  user   User   @relation(fields: [userid], references: [userid])
+
+  @@map("users_items")
+}
+
+model UserItemTransaction {
+  id      BigInt  @id @default(autoincrement())
+  userid  String  @db.VarChar(24)
+  service String  @db.VarChar(32)
+  amount  Decimal @db.Decimal(32, 2)
+  itemid  BigInt
+  time    BigInt
+  user    User    @relation(fields: [userid], references: [userid])
+
+  @@map("users_items_transactions")
+}
+
+model UserLogin {
+  id           BigInt      @id @default(autoincrement())
+  type         String      @db.Text
+  userid       String      @db.VarChar(24)
+  sessionid    BigInt      @default(0)
+  ip           String      @db.Text
+  location     String      @db.Text
+  agent        String      @db.Text
+  time         BigInt
+  user         User        @relation(fields: [userid], references: [userid])
+  user_session UserSession @relation(fields: [sessionid], references: [id])
+
+  @@map("users_logins")
+}
+
+model UserRestriction {
+  id BigInt @id @default(autoincrement())
+
+  removed                                 Boolean @default(false)
+  userid                                  String  @db.VarChar(24)
+  restriction                             String  @db.VarChar(256)
+  reason                                  String  @db.VarChar(256)
+  byuserid                                String  @db.VarChar(24)
+  expire                                  BigInt  @default(-1)
+  time                                    BigInt
+  users_restrictions_from_useridTouser    User    @relation("users_restrictions_from_useridTousers", fields: [userid], references: [userid])
+  users_restrictions_from_byuseridTousers User    @relation("users_restrictions_from_byuseridTousers", fields: [byuserid], references: [userid])
+
+  @@map("users_restrictions")
+}
+
+model UserReward {
+  id     BigInt  @id @default(autoincrement())
+  userid String  @db.VarChar(24)
+  reward String  @db.VarChar(256)
+  amount Decimal @db.Decimal(32, 2)
+  time   BigInt
+  user   User    @relation(fields: [userid], references: [userid])
+
+  @@map("users_rewards")
+}
+
+model UserSeedClient {
+  id            BigInt        @id @default(autoincrement())
+  removed       Boolean       @default(false)
+  userid        String        @db.VarChar(24)
+  seed          String        @db.VarChar(256)
+  time          BigInt
+  user          User          @relation(fields: [userid], references: [userid])
+  plinko_bets   PlinkoBet[]
+  unboxing_bets UnboxingBet[]
+
+  @@map("users_seeds_client")
+}
+
+model UserSeedServer {
+  id            BigInt        @id @default(autoincrement())
+  removed       Boolean       @default(false)
+  userid        String        @db.VarChar(24)
+  seed          String        @db.VarChar(256)
+  nonce         BigInt        @default(0)
+  time          BigInt
+  user          User          @relation(fields: [userid], references: [userid])
+  plinko_bets   PlinkoBet[]
+  unboxing_bets UnboxingBet[]
+
+  @@map("users_seeds_server")
+}
+
+model UserSession {
+  id        BigInt  @id @default(autoincrement())
+  removed   Boolean @default(false)
+  activated Boolean @default(false)
+  userid    String  @db.VarChar(24)
+  session   String  @db.VarChar(32)
+  device    String  @db.VarChar(64)
+  expire    BigInt
+  created   BigInt
+
+  user        User        @relation(fields: [userid], references: [userid])
+  user_logins UserLogin[]
+
+  @@map("users_sessions")
+}
+
+model UserTrade {
+  id      BigInt  @id @default(autoincrement())
+  type    String  @db.VarChar(32)
+  method  String  @db.VarChar(256)
+  game    String  @db.VarChar(32)
+  userid  String  @db.VarChar(24)
+  user    User    @relation(fields: [userid], references: [userid])
+  amount  Decimal @db.Decimal(32, 2)
+  value   Float
+  tradeid BigInt
+  time    BigInt
+
+  @@map("users_trades")
+}
+
+model UserTransaction {
+  id      BigInt  @id @default(autoincrement())
+  userid  String  @db.VarChar(24)
+  service String  @db.VarChar(32)
+  amount  Decimal @db.Decimal(32, 2)
+  time    BigInt
+  user    User    @relation(fields: [userid], references: [userid])
+
+  @@map("users_transactions")
+}
+
+model UserTransfer {
+  id                                                 BigInt  @id @default(autoincrement())
+  from_userid                                        String  @db.VarChar(24)
+  to_userid                                          String  @db.VarChar(24)
+  amount                                             Decimal @db.Decimal(32, 2)
+  time                                               BigInt
+  users_transfers_users_transfers_from_useridTousers User    @relation("users_users_transfers_from_useridTousers", fields: [from_userid], references: [userid])
+  users_transfers_users_transfers_to_useridTouser    User    @relation("users_users_transfers_to_useridTousers", fields: [to_userid], references: [userid])
+
+  @@map("users_transfers")
+}
+
+model UserTwofa {
+  id        BigInt  @id @default(autoincrement())
+  removed   Boolean @default(false)
+  activated Boolean @default(false)
+  userid    String  @db.VarChar(24)
+  secret    String  @db.VarChar(256)
+  recover   String  @db.VarChar(256)
+  time      BigInt
+  user      User    @relation(fields: [userid], references: [userid])
+
+  @@map("users_twofa")
+}
+
+model CreditCardDeposit {
+  id     BigInt @id @default(autoincrement())
+  userid String @db.VarChar(24)
+  amount BigInt
+  time   BigInt
+  user   User   @relation(fields: [userid], references: [userid])
+
+  @@map("creditcard_deposit")
+}
+
+model BlockedSkin {
+  id                Int      @id @default(autoincrement())
+  blockMethod       String
+  blockValue        String
+
+  @@map("blockedskins")
+}
+
+model UserDiscordLink {
+  id     BigInt @id @default(autoincrement())
+  userid String @db.VarChar(256)
+  discord_id String @db.VarChar(256)
+  verification_code String @db.VarChar(256)
+  verified Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@map("user_discord_links")
+}
+
+model Bonus {
+  id     String @id @default(cuid())
+  code   String @db.VarChar(256)
+  amount Decimal @db.Decimal(10, 2)
+  max_claims Int @default(5)
+  expires_at DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@map("bonuses")
+}
+
+model BonusClaim {
+  id     String @id @default(cuid())
+  bonus_id String @db.Char(36)
+  user_id String @db.VarChar(24)
+  claimed_at DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@map("bonusclaims")
+}
+
+model UserIp {
+  id     BigInt @id @default(autoincrement())
+  ip     String @db.VarChar(256)
+  userid String @db.VarChar(24)
+  time   BigInt
+
+  @@map("user_ips")
+}
